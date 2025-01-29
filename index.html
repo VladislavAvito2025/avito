@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор CTR для Авито</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .ads-container {
+            margin-top: 20px;
+        }
+        .ad-item {
+            margin-bottom: 20px;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Калькулятор CTR для Авито</h1>
+        <label for="ad-count">Количество объявлений (от 1 до 50):</label>
+        <input type="number" id="ad-count" min="1" max="50" placeholder="Введите число">
+        <button onclick="createAds()">Создать</button>
+
+        <div class="ads-container" id="ads-container"></div>
+
+        <button onclick="calculateCTR()">Рассчитать</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function createAds() {
+            const adCount = parseInt(document.getElementById('ad-count').value);
+            const adsContainer = document.getElementById('ads-container');
+            adsContainer.innerHTML = ''; // Очищаем контейнер
+
+            if (adCount < 1 || adCount > 50) {
+                alert('Введите число от 1 до 50');
+                return;
+            }
+
+            for (let i = 1; i <= adCount; i++) {
+                const adItem = document.createElement('div');
+                adItem.className = 'ad-item';
+                adItem.innerHTML = `
+                    <h3>Объявление ${i}</h3>
+                    <label for="views-${i}">Из показа в просмотр:</label>
+                    <input type="number" id="views-${i}" placeholder="Введите число">
+                    <label for="contacts-${i}">Из просмотров в контакт:</label>
+                    <input type="number" id="contacts-${i}" placeholder="Введите число">
+                `;
+                adsContainer.appendChild(adItem);
+            }
+        }
+
+        function calculateCTR() {
+            const adCount = parseInt(document.getElementById('ad-count').value);
+            let totalViews = 0; // Сумма для первого столбца (показы → просмотры)
+            let totalContacts = 0; // Сумма для второго столбца (просмотры → контакты)
+
+            for (let i = 1; i <= adCount; i++) {
+                const views = parseInt(document.getElementById(`views-${i}`).value) || 0;
+                const contacts = parseInt(document.getElementById(`contacts-${i}`).value) || 0;
+
+                totalViews += views; // Суммируем значения первого столбца
+                totalContacts += contacts; // Суммируем значения второго столбца
+            }
+
+            // Рассчитываем средние значения
+            const avgViews = totalViews / adCount; // Среднее для первого столбца
+            const avgContacts = totalContacts / adCount; // Среднее для второго столбца
+
+            // Выводим результаты
+            document.getElementById('result').innerHTML = `
+                <p>Средний CTR (Из показа в просмотр): ${avgViews.toFixed(2)}</p>
+                <p>Средний CTR (Из просмотров в контакт): ${avgContacts.toFixed(2)}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
