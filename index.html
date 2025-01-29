@@ -3,126 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор CTR для Авито</title>
+    <title>Полусухая стяжка пола</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
             margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
         h1 {
-            text-align: center;
-            color: #333;
+            margin-top: 0;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .services, .advantages, .contact {
+            margin-bottom: 40px;
         }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
+        .services h2, .advantages h2, .contact h2 {
+            color: #007BFF;
         }
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .services ul, .advantages ul {
+            list-style-type: none;
+            padding: 0;
         }
-        button {
-            display: block;
-            width: 100%;
+        .services ul li, .advantages ul li {
+            background: #fff;
+            margin: 10px 0;
             padding: 10px;
-            background-color: #28a745;
-            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .contact form {
+            display: flex;
+            flex-direction: column;
+        }
+        .contact form input, .contact form textarea {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .contact form button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #218838;
+        .contact form button:hover {
+            background-color: #0056b3;
         }
-        .ads-container {
-            margin-top: 20px;
-        }
-        .ad-item {
-            margin-bottom: 20px;
-        }
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
+        footer {
+            background-color: #333;
+            color: white;
             text-align: center;
+            padding: 10px 0;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Полусухая стяжка пола</h1>
+        <p>Профессиональные услуги по устройству полусухой стяжки пола</p>
+    </header>
     <div class="container">
-        <h1>Калькулятор CTR для Авито</h1>
-        <label for="ad-count">Количество объявлений (от 1 до 50):</label>
-        <input type="number" id="ad-count" min="1" max="50" placeholder="Введите число">
-        <button onclick="createAds()">Создать</button>
-
-        <div class="ads-container" id="ads-container"></div>
-
-        <button onclick="calculateCTR()">Рассчитать</button>
-
-        <div class="result" id="result"></div>
+        <section class="services">
+            <h2>Наши услуги</h2>
+            <ul>
+                <li>Устройство полусухой стяжки пола</li>
+                <li>Выравнивание пола под любое покрытие</li>
+                <li>Утепление и звукоизоляция пола</li>
+                <li>Ремонт и восстановление старых стяжек</li>
+            </ul>
+        </section>
+        <section class="advantages">
+            <h2>Преимущества полусухой стяжки</h2>
+            <ul>
+                <li>Высокая прочность и долговечность</li>
+                <li>Минимальное время высыхания</li>
+                <li>Отсутствие трещин и усадки</li>
+                <li>Экологически чистые материалы</li>
+            </ul>
+        </section>
+        <section class="contact">
+            <h2>Свяжитесь с нами</h2>
+            <form action="#" method="post">
+                <input type="text" name="name" placeholder="Ваше имя" required>
+                <input type="tel" name="phone" placeholder="Ваш телефон" required>
+                <textarea name="message" placeholder="Ваше сообщение" rows="5"></textarea>
+                <button type="submit">Отправить</button>
+            </form>
+        </section>
     </div>
-
-    <script>
-        function createAds() {
-            const adCount = parseInt(document.getElementById('ad-count').value);
-            const adsContainer = document.getElementById('ads-container');
-            adsContainer.innerHTML = ''; // Очищаем контейнер
-
-            if (adCount < 1 || adCount > 50) {
-                alert('Введите число от 1 до 50');
-                return;
-            }
-
-            for (let i = 1; i <= adCount; i++) {
-                const adItem = document.createElement('div');
-                adItem.className = 'ad-item';
-                adItem.innerHTML = `
-                    <h3>Объявление ${i}</h3>
-                    <label for="views-${i}">Из показа в просмотр:</label>
-                    <input type="number" id="views-${i}" placeholder="Введите число">
-                    <label for="contacts-${i}">Из просмотров в контакт:</label>
-                    <input type="number" id="contacts-${i}" placeholder="Введите число">
-                `;
-                adsContainer.appendChild(adItem);
-            }
-        }
-
-        function calculateCTR() {
-            const adCount = parseInt(document.getElementById('ad-count').value);
-            let totalViews = 0; // Сумма для первого столбца (показы → просмотры)
-            let totalContacts = 0; // Сумма для второго столбца (просмотры → контакты)
-
-            for (let i = 1; i <= adCount; i++) {
-                const views = parseInt(document.getElementById(`views-${i}`).value) || 0;
-                const contacts = parseInt(document.getElementById(`contacts-${i}`).value) || 0;
-
-                totalViews += views; // Суммируем значения первого столбца
-                totalContacts += contacts; // Суммируем значения второго столбца
-            }
-
-            // Рассчитываем средние значения
-            const avgViews = totalViews / adCount; // Среднее для первого столбца
-            const avgContacts = totalContacts / adCount; // Среднее для второго столбца
-
-            // Выводим результаты
-            document.getElementById('result').innerHTML = `
-                <p>Средний CTR (Из показа в просмотр): ${avgViews.toFixed(2)}</p>
-                <p>Средний CTR (Из просмотров в контакт): ${avgContacts.toFixed(2)}</p>
-            `;
-        }
-    </script>
+    <footer>
+        <p>&copy; 2023 Полусухая стяжка пола. Все права защищены.</p>
+    </footer>
 </body>
 </html>
