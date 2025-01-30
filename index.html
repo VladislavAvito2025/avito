@@ -1,3 +1,153 @@
+Владислав Бакланов, [30.01.2025 3:13]
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Космическая Галерея</title>
+    <style>
+        :root {
+            --star-size: 2px;
+            --galaxy-rotate: 0deg;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            min-height: 300vh;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .parallax-container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1000px;
+        }
+
+        .galaxy {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            left: -25%;
+            top: -25%;
+            background: 
+                radial-gradient(circle at 50% 50%, 
+                    rgba(255, 255, 255, 0.1) 10%,
+                    transparent 30%),
+                linear-gradient(45deg, 
+                    #0a0a2e 0%, 
+                    #1a1a4f 50%, 
+                    #2a2a6f 100%);
+            transform: rotate3d(1, 0.5, 0, var(--galaxy-rotate));
+            transition: transform 0.5s;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            width: var(--star-size);
+            height: var(--star-size);
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            padding: 50vh 20px;
+            color: white;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 100px auto;
+            max-width: 600px;
+            transform: translateX(-100vw);
+            opacity: 0;
+            transition: all 1s;
+        }
+
+        .card.active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="parallax-container">
+        <div class="galaxy" id="galaxy"></div>
+    </div>
+
+    <div class="controls">
+        <button onclick="toggleStars()">✨ Переключить звёзды</button>
+        <button onclick="resetRotation()">🌀 Сбросить вращение</button>
+    </div>
+
+    <div class="content">
+        <div class="card" data-index="1">
+            <h2>🌌 Туманность Ориона</h2>
+            <p>Ярчайшая диффузная туманность, видимая невооружённым глазом...</p>
+        </div>
+        <div class="card" data-index="2">
+            <h2>🪐 Кольца Сатурна</h2>
+            <p>Уникальная система ледяных частиц, вращающихся вокруг планеты...</p>
+        </div>
+        <div class="card" data-index="3">
+            <h2>🌠 Метеорный поток</h2>
+            <p>Ежегодное астрономическое явление Персеид...</p>
+        </div>
+    </div>
+
+    <script>
+        // Генерация звёздного поля
+        function createStars() {
+            const galaxy = document.getElementById('galaxy');
+            for(let i = 0; i < 300; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = ${Math.random() * 100}%;
+                star.style.top = ${Math.random() * 100}%;
+                star.style.setProperty('--star-size', 
+                    `${Math.random() * 3 + 1}px`);
+                galaxy.appendChild(star);
+            }
+        }
+
+        // Параллакс-эффект при движении мыши
+        document.addEventListener('mousemove', (e) => {
+
+Владислав Бакланов, [30.01.2025 3:13]
 const x = (e.clientX / window.innerWidth - 0.5) * 20;
             const y = (e.clientY / window.innerHeight - 0.5) * 20;
             document.documentElement.style.setProperty(
