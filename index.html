@@ -151,7 +151,7 @@
         <h1>Калькулятор стоимости теплицы</h1>
         <div class="form-group">
             <label for="type">Тип теплицы:</label>
-            <select id="type">
+            <select id="type" onchange="updateFrameOptions()">
                 <option value="5000">Арочная</option>
                 <option value="6000">Прямостенная</option>
                 <option value="7000">Каплевидная</option>
@@ -181,10 +181,7 @@
         <div class="form-group">
             <label for="frame">Каркас теплицы:</label>
             <select id="frame">
-                <option value="300">20х20</option>
-                <option value="400">40х20</option>
-                <option value="500">20х20 + 20х20</option>
-                <option value="600">40х20 + 20х20</option>
+                <!-- Опции будут обновляться динамически -->
             </select>
         </div>
         <div class="form-group">
@@ -230,8 +227,50 @@
     </div>
 
     <script>
+        // Каркасы для каждого типа теплицы
+        const frameOptions = {
+            "Арочная": [
+                { value: 300, label: "20х20" },
+                { value: 400, label: "40х20" },
+                { value: 500, label: "20х20 + 20х20" },
+                { value: 600, label: "40х20 + 20х20" }
+            ],
+            "Прямостенная": [
+                { value: 400, label: "40х20" },
+                { value: 600, label: "40х20 + 20х20" }
+            ],
+            "Каплевидная": [
+                { value: 400, label: "40х20" }
+            ],
+            "Домиком": [
+                { value: 400, label: "40х20" },
+                { value: 600, label: "40х20 + 20х20" }
+            ]
+        };
+
+        // Обновление опций каркаса
+        function updateFrameOptions() {
+            const typeSelect = document.getElementById("type");
+            const frameSelect = document.getElementById("frame");
+            const selectedType = typeSelect.options[typeSelect.selectedIndex].text;
+
+            // Очищаем текущие опции
+            frameSelect.innerHTML = "";
+
+            // Добавляем новые опции
+            frameOptions[selectedType].forEach(option => {
+                const newOption = document.createElement("option");
+                newOption.value = option.value;
+                newOption.text = option.label;
+                frameSelect.add(newOption);
+            });
+        }
+
+        // Инициализация каркаса при загрузке страницы
+        updateFrameOptions();
+
+        // Расчет стоимости
         function calculate() {
-            // Получаем значения из формы
             const type = parseFloat(document.getElementById('type').value);
             const width = parseFloat(document.getElementById('width').value);
             const length = parseFloat(document.getElementById('length').value);
