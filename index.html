@@ -112,6 +112,54 @@
             transform: translateY(0);
         }
 
+        /* Всплывающее сообщение */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            max-width: 90%;
+            width: 400px;
+            text-align: left;
+        }
+
+        .popup-content {
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .popup button.copy-btn {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .popup button.copy-btn:hover {
+            background: #0056b3;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
         /* Анимации */
         @keyframes fadeIn {
             from {
@@ -158,6 +206,10 @@
 
             .result {
                 font-size: 1em;
+            }
+
+            .popup {
+                width: 90%;
             }
         }
     </style>
@@ -210,6 +262,13 @@
                 <option value="0">Без поликарбоната</option>
             </select>
         </div>
+        <div class="form-group" id="arc-step-group" style="display: none;">
+            <label for="arc-step">Шаг дуги:</label>
+            <select id="arc-step">
+                <option value="1">1 м</option>
+                <option value="0.65">0.65 м</option>
+            </select>
+        </div>
         <div class="form-group">
             <label for="foundation">Фундамент:</label>
             <select id="foundation">
@@ -243,6 +302,15 @@
         <div class="result" id="result">Общая стоимость: 0 руб</div>
     </div>
 
+    <!-- Всплывающее сообщение -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <div class="popup-content" id="popup-content">
+            <!-- Содержимое будет заполнено динамически -->
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard()">Скопировать</button>
+    </div>
+
     <script>
         // Каркасы для каждого типа теплицы
         const frameOptions = {
@@ -265,10 +333,11 @@
             ]
         };
 
-        // Обновление опций каркаса
+        // Обновление опций каркаса и отображение шага дуги
         function updateFrameOptions() {
             const typeSelect = document.getElementById("type");
             const frameSelect = document.getElementById("frame");
+            const arcStepGroup = document.getElementById("arc-step-group");
             const selectedType = typeSelect.options[typeSelect.selectedIndex].text;
 
             // Очищаем текущие опции
@@ -281,39 +350,82 @@
                 newOption.text = option.label;
                 frameSelect.add(newOption);
             });
+
+            // Показываем или скрываем шаг дуги
+            if (selectedType === "Арочная") {
+                arcStepGroup.style.display = "block";
+            } else {
+                arcStepGroup.style.display = "none";
+            }
         }
 
         // Инициализация каркаса при загрузке страницы
         updateFrameOptions();
 
-        // Расчет стоимости
+        // Расчет стоимости и вывод всплывающего сообщения
         function calculate() {
-            const type = parseFloat(document.getElementById('type').value);
-            const width = parseFloat(document.getElementById('width').value);
-            const length = parseFloat(document.getElementById('length').value);
-            const frame = parseFloat(document.getElementById('frame').value);
-            const polycarbonate = parseFloat(document.getElementById('polycarbonate').value);
-            const foundation = parseFloat(document.getElementById('foundation').value);
-
-            // Дополнительные товары
-            const dripMech = parseFloat(document.getElementById('drip_mech').value) || 0;
-            const dripAuto = parseFloat(document.getElementById('drip_auto').value) || 0;
-            const windowAuto = parseFloat(document.getElementById('window_auto').value) || 0;
-            const tapeSteam = parseFloat(document.getElementById('tape_steam').value) || 0;
-            const tapeZinc = parseFloat(document.getElementById('tape_zinc').value) || 0;
-            const extraWindow = parseFloat(document.getElementById('extra_window').value) || 0;
-
-            // Рассчитываем площадь теплицы
-            const area = width * length;
+            const type = document.getElementById("type").options[document.getElementById("type").selectedIndex].text;
+            const width = document.getElementById("width").value;
+            const length = document.getElementById("length").value;
+            const frame = document.getElementById("frame").options[document.getElementById("frame").selectedIndex].text;
+            const polycarbonate = document.getElementById("polycarbonate").options[document.getElementById("polycarbonate").selectedIndex].text;
+            const arcStep = document.getElementById("arc-step").value || "1 м";
+            const foundation = document.getElementById("foundation").options[document.getElementById("foundation").selectedIndex].text;
 
             // Рассчитываем общую стоимость
-            const totalCost = type + (area * frame) + (area * polycarbonate) + foundation +
-                (dripMech * 1690) + (dripAuto * 4490) + (windowAuto * 2590) +
-                (tapeSteam * 1590) + (tapeZinc * 1990) + (extraWindow * 1490);
+            const totalCost = parseFloat(document.getElementById('type').value) +
+                (width * length * parseFloat(document.getElementById('frame').value)) +
+                (width * length * parseFloat(document.getElementById('polycarbonate').value)) +
+                parseFloat(document.getElementById('foundation').value);
 
-            // Выводим результат
-            document.getElementById('result').innerText = `Общая стоимость: ${totalCost.toFixed(2)} руб`;
+            // Формируем текст для всплывающего сообщения
+            const popupContent = `
+                Тип теплицы: ${type}
+                ☀️ Поликарбонат с защитой от ультрафиолета UV-400
+                ⚙️ Цельногнутые дуги из стальной замкнутой трубы
+                ⚙️ Каркас из оцинкованной внутри и снаружи стали (полностью защита от ржавчины и коррозии)
+                ⚙️ Краб-система на 4 болтах
+                ❄️ Не требует подпорок на зиму
+                ✏️ Гарантия 15 лет!!!
+                -----------------
+                Каркас: ${frame}
+                Шаг дуги: ${arcStep}
+                Поликарбонат: ${polycarbonate} с защитой от ультрафиолета
+                Размеры (ШхД): ${width} x ${length} м²
+                Комплектация: 2 двери, 2 форточки
+                Фундамент: ${foundation}
+                Сборка: ${document.getElementById("assembly") ? document.getElementById("assembly").options[document.getElementById("assembly").selectedIndex].text : "Не указано"}
+                -----------------
+                Стоимость со скидкой до ${getDiscountDate()}: ${totalCost.toFixed(2)} руб.
+                (в стоимость включены: чек, каркас на краб-системе, поликарбонат, инструкция по сборке)
+            `;
+
+            // Отображаем всплывающее сообщение
+            document.getElementById("popup-content").innerText = popupContent;
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("popup").style.display = "block";
         }
+
+        // Функция для получения даты скидки (текущая дата + 7 дней)
+        function getDiscountDate() {
+            const date = new Date();
+            date.setDate(date.getDate() + 7);
+            return date.toLocaleDateString("ru-RU");
+        }
+
+        // Копирование текста в буфер обмена
+        function copyToClipboard() {
+            const text = document.getElementById("popup-content").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Текст скопирован!");
+            });
+        }
+
+        // Закрытие всплывающего сообщения при клике на оверлей
+        document.getElementById("overlay").addEventListener("click", () => {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("popup").style.display = "none";
+        });
     </script>
 </body>
 </html>
