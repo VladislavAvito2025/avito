@@ -1,114 +1,38 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Полусухая стяжка пола</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
+const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            document.documentElement.style.setProperty(
+                '--galaxy-rotate', 
+                ${x + y}deg
+            );
+        });
+
+        // Анимация карточек при прокрутке
+        function checkCards() {
+            document.querySelectorAll('.card').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if(rect.top < window.innerHeight * 0.8) {
+                    card.classList.add('active');
+                }
+            });
         }
-        header {
-            background-color: #007BFF;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
+
+        // Управление звёздами
+        let starsVisible = true;
+        function toggleStars() {
+            starsVisible = !starsVisible;
+            document.querySelectorAll('.star').forEach(star => {
+                star.style.display = starsVisible ? 'block' : 'none';
+            });
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+
+        function resetRotation() {
+            document.documentElement.style.setProperty('--galaxy-rotate', '0deg');
         }
-        h1 {
-            margin-top: 0;
-        }
-        .services, .advantages, .contact {
-            margin-bottom: 40px;
-        }
-        .services h2, .advantages h2, .contact h2 {
-            color: #007BFF;
-        }
-        .services ul, .advantages ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .services ul li, .advantages ul li {
-            background: #fff;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .contact form {
-            display: flex;
-            flex-direction: column;
-        }
-        .contact form input, .contact form textarea {
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .contact form button {
-            padding: 10px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .contact form button:hover {
-            background-color: #0056b3;
-        }
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            margin-top: 40px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Полусухая стяжка пола</h1>
-        <p>Профессиональные услуги по устройству полусухой стяжки пола</p>
-    </header>
-    <div class="container">
-        <section class="services">
-            <h2>Наши услуги</h2>
-            <ul>
-                <li>Устройство полусухой стяжки пола</li>
-                <li>Выравнивание пола под любое покрытие</li>
-                <li>Утепление и звукоизоляция пола</li>
-                <li>Ремонт и восстановление старых стяжек</li>
-            </ul>
-        </section>
-        <section class="advantages">
-            <h2>Преимущества полусухой стяжки</h2>
-            <ul>
-                <li>Высокая прочность и долговечность</li>
-                <li>Минимальное время высыхания</li>
-                <li>Отсутствие трещин и усадки</li>
-                <li>Экологически чистые материалы</li>
-            </ul>
-        </section>
-        <section class="contact">
-            <h2>Свяжитесь с нами</h2>
-            <form action="#" method="post">
-                <input type="text" name="name" placeholder="Ваше имя" required>
-                <input type="tel" name="phone" placeholder="Ваш телефон" required>
-                <textarea name="message" placeholder="Ваше сообщение" rows="5"></textarea>
-                <button type="submit">Отправить</button>
-            </form>
-        </section>
-    </div>
-    <footer>
-        <p>&copy; 2023 Полусухая стяжка пола. Все права защищены.</p>
-    </footer>
+
+        // Инициализация
+        createStars();
+        window.addEventListener('scroll', checkCards);
+        checkCards(); // Проверка при загрузке
+    </script>
 </body>
 </html>
