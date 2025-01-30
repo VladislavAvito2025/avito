@@ -2,185 +2,262 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Космическая Галерея</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор стоимости теплицы</title>
     <style>
-        :root {
-            --star-size: 2px;
-            --galaxy-rotate: 0deg;
-        }
-
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f9f9f9, #e0e0e0);
+            color: #333;
             margin: 0;
-            background: #000;
-            min-height: 300vh;
-            font-family: 'Arial', sans-serif;
-            overflow-x: hidden;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        .parallax-container {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            perspective: 1000px;
-        }
-
-        .galaxy {
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            left: -25%;
-            top: -25%;
-            background: 
-                radial-gradient(circle at 50% 50%, 
-                    rgba(255, 255, 255, 0.1) 10%,
-                    transparent 30%),
-                linear-gradient(45deg, 
-                    #0a0a2e 0%, 
-                    #1a1a4f 50%, 
-                    #2a2a6f 100%);
-            transform: rotate3d(1, 0.5, 0, var(--galaxy-rotate));
-            transition: transform 0.5s;
-        }
-
-        .star {
-            position: absolute;
+        .container {
             background: white;
-            width: var(--star-size);
-            height: var(--star-size);
-            border-radius: 50%;
-            animation: twinkle 2s infinite;
-        }
-
-        .content {
-            position: relative;
-            z-index: 2;
-            padding: 50vh 20px;
-            color: white;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             padding: 30px;
-            margin: 100px auto;
-            max-width: 600px;
-            transform: translateX(-100vw);
-            opacity: 0;
-            transition: all 1s;
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
         }
 
-        .card.active {
-            transform: translateX(0);
-            opacity: 1;
+        h1 {
+            text-align: center;
+            color: #007BFF;
+            font-size: 2em;
+            margin-bottom: 20px;
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .controls {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 3;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+            outline: none;
+        }
+
+        .form-group input[type="number"] {
+            width: calc(100% - 24px);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #007BFF, #0056b3);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            animation: slideUp 0.5s ease-in-out;
         }
 
         button {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            padding: 10px 20px;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #007BFF, #0056b3);
             color: white;
-            border-radius: 5px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 5px;
-            transition: 0.3s;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease;
         }
 
         button:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #0056b3, #003f7f);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+
+            button {
+                padding: 12px;
+                font-size: 1em;
+            }
+
+            .result {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="parallax-container">
-        <div class="galaxy" id="galaxy"></div>
-    </div>
-
-    <div class="controls">
-        <button onclick="toggleStars()">✨ Переключить звёзды</button>
-        <button onclick="resetRotation()">🌀 Сбросить вращение</button>
-    </div>
-
-    <div class="content">
-        <div class="card" data-index="1">
-            <h2>🌌 Туманность Ориона</h2>
-            <p>Ярчайшая диффузная туманность, видимая невооружённым глазом...</p>
+    <div class="container">
+        <h1>Калькулятор стоимости теплицы</h1>
+        <div class="form-group">
+            <label for="type">Тип теплицы:</label>
+            <select id="type">
+                <option value="5000">Арочная</option>
+                <option value="6000">Прямостенная</option>
+                <option value="7000">Каплевидная</option>
+                <option value="8000">Домиком</option>
+            </select>
         </div>
-        <div class="card" data-index="2">
-            <h2>🪐 Кольца Сатурна</h2>
-            <p>Уникальная система ледяных частиц, вращающихся вокруг планеты...</p>
+        <div class="form-group">
+            <label for="width">Ширина теплицы (м):</label>
+            <select id="width">
+                <option value="2.5">2.5 м</option>
+                <option value="3">3 м</option>
+                <option value="3.5">3.5 м</option>
+                <option value="4">4 м</option>
+            </select>
         </div>
-        <div class="card" data-index="3">
-            <h2>🌠 Метеорный поток</h2>
-            <p>Ежегодное астрономическое явление Персеид...</p>
+        <div class="form-group">
+            <label for="length">Длина теплицы (м):</label>
+            <select id="length">
+                <option value="4">4 м</option>
+                <option value="6">6 м</option>
+                <option value="8">8 м</option>
+                <option value="10">10 м</option>
+                <option value="12">12 м</option>
+                <option value="14">14 м</option>
+            </select>
         </div>
+        <div class="form-group">
+            <label for="frame">Каркас теплицы:</label>
+            <select id="frame">
+                <option value="300">20х20</option>
+                <option value="400">40х20</option>
+                <option value="500">20х20 + 20х20</option>
+                <option value="600">40х20 + 20х20</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="polycarbonate">Толщина поликарбоната:</label>
+            <select id="polycarbonate">
+                <option value="200">Поликарбонат Стандарт 4 мм</option>
+                <option value="300">Поликарбонат Люкс 4 мм</option>
+                <option value="400">Поликарбонат Премиум 6 мм</option>
+                <option value="0">Без поликарбоната</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="foundation">Фундамент:</label>
+            <select id="foundation">
+                <option value="0">Без фундамента</option>
+                <option value="5000">Брус</option>
+                <option value="10000">Сваи</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Дополнительные товары:</label>
+            <div>
+                <input type="number" id="drip_mech" min="0" placeholder="Капельный полив механический (1690 руб)">
+            </div>
+            <div>
+                <input type="number" id="drip_auto" min="0" placeholder="Капельный полив автоматический (4490 руб)">
+            </div>
+            <div>
+                <input type="number" id="window_auto" min="0" placeholder="Автомат для форточки (2590 руб)">
+            </div>
+            <div>
+                <input type="number" id="tape_steam" min="0" placeholder="Паропропускающая лента (1590 руб)">
+            </div>
+            <div>
+                <input type="number" id="tape_zinc" min="0" placeholder="Оцинкованная лента (1990 руб)">
+            </div>
+            <div>
+                <input type="number" id="extra_window" min="0" placeholder="Дополнительная форточка (1490 руб)">
+            </div>
+        </div>
+        <button onclick="calculate()">Рассчитать стоимость</button>
+        <div class="result" id="result">Общая стоимость: 0 руб</div>
     </div>
 
     <script>
-        // Генерация звёздного поля
-        function createStars() {
-            const galaxy = document.getElementById('galaxy');
-            for(let i = 0; i < 300; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = ${Math.random() * 100}%;
-                star.style.top = ${Math.random() * 100}%;
-                star.style.setProperty('--star-size', 
-                    `${Math.random() * 3 + 1}px`);
-                galaxy.appendChild(star);
-            }
+        function calculate() {
+            // Получаем значения из формы
+            const type = parseFloat(document.getElementById('type').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const length = parseFloat(document.getElementById('length').value);
+            const frame = parseFloat(document.getElementById('frame').value);
+            const polycarbonate = parseFloat(document.getElementById('polycarbonate').value);
+            const foundation = parseFloat(document.getElementById('foundation').value);
+
+            // Дополнительные товары
+            const dripMech = parseFloat(document.getElementById('drip_mech').value) || 0;
+            const dripAuto = parseFloat(document.getElementById('drip_auto').value) || 0;
+            const windowAuto = parseFloat(document.getElementById('window_auto').value) || 0;
+            const tapeSteam = parseFloat(document.getElementById('tape_steam').value) || 0;
+            const tapeZinc = parseFloat(document.getElementById('tape_zinc').value) || 0;
+            const extraWindow = parseFloat(document.getElementById('extra_window').value) || 0;
+
+            // Рассчитываем площадь теплицы
+            const area = width * length;
+
+            // Рассчитываем общую стоимость
+            const totalCost = type + (area * frame) + (area * polycarbonate) + foundation +
+                (dripMech * 1690) + (dripAuto * 4490) + (windowAuto * 2590) +
+                (tapeSteam * 1590) + (tapeZinc * 1990) + (extraWindow * 1490);
+
+            // Выводим результат
+            document.getElementById('result').innerText = `Общая стоимость: ${totalCost.toFixed(2)} руб`;
         }
-
-        // Параллакс-эффект при движении мыши
-        document.addEventListener('mousemove', (e) => {
-
-const x = (e.clientX / window.innerWidth - 0.5) * 20;
-            const y = (e.clientY / window.innerHeight - 0.5) * 20;
-            document.documentElement.style.setProperty(
-                '--galaxy-rotate', 
-                ${x + y}deg
-            );
-        });
-
-        // Анимация карточек при прокрутке
-        function checkCards() {
-            document.querySelectorAll('.card').forEach(card => {
-                const rect = card.getBoundingClientRect();
-                if(rect.top < window.innerHeight * 0.8) {
-                    card.classList.add('active');
-                }
-            });
-        }
-
-        // Управление звёздами
-        let starsVisible = true;
-        function toggleStars() {
-            starsVisible = !starsVisible;
-            document.querySelectorAll('.star').forEach(star => {
-                star.style.display = starsVisible ? 'block' : 'none';
-            });
-        }
-
-        function resetRotation() {
-            document.documentElement.style.setProperty('--galaxy-rotate', '0deg');
-        }
-
-        // Инициализация
-        createStars();
-        window.addEventListener('scroll', checkCards);
-        checkCards(); // Проверка при загрузке
     </script>
 </body>
 </html>
