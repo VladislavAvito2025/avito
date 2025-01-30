@@ -15,8 +15,8 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
-            touch-action: none;
+            overflow: hidden; /* Фиксированный экран */
+            touch-action: none; /* Запрет масштабирования */
         }
 
         .container {
@@ -26,8 +26,9 @@
             padding: 20px;
             max-width: 800px;
             width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-height: 90vh; /* Фиксированная высота */
+            overflow-y: auto; /* Прокрутка, если контент не помещается */
+            animation: fadeIn 1s ease-in-out;
         }
 
         .logo {
@@ -73,6 +74,23 @@
             outline: none;
         }
 
+        .form-group input[type="number"] {
+            width: calc(100% - 22px);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #007BFF, #0056b3);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            animation: slideUp 0.5s ease-in-out;
+            cursor: pointer; /* Добавляем курсор для интерактивности */
+        }
+
         button {
             width: 100%;
             padding: 12px;
@@ -95,7 +113,7 @@
             transform: translateY(0);
         }
 
-        /* Стиль всплывающего окна */
+        /* Всплывающее сообщение */
         .popup {
             display: none;
             position: fixed;
@@ -105,46 +123,95 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 80%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             z-index: 1000;
+            max-width: 90%;
+            width: 400px;
+            text-align: left;
         }
 
-        .popup-overlay {
+        .popup-content {
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .popup button.copy-btn {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .popup button.copy-btn:hover {
+            background: #0056b3;
+        }
+
+        .overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
 
-        .popup-header {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .popup-content {
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-            font-size: 1em;
-            color: #333;
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .popup button {
-            background: #28a745;
-            padding: 8px 16px;
-            border: none;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.5em;
+            }
 
-        .popup button:hover {
-            background: #218838;
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+
+            .result {
+                font-size: 1em;
+            }
+
+            .popup {
+                width: 90%;
+            }
         }
     </style>
 </head>
@@ -236,12 +303,13 @@
         <div class="result" id="result" onclick="showPopup()">Общая стоимость: 0 руб</div>
     </div>
 
-    <!-- Всплывающее окно -->
-    <div class="popup-overlay" id="popup-overlay"></div>
+    <!-- Всплывающее сообщение -->
+    <div class="overlay" id="overlay"></div>
     <div class="popup" id="popup">
-        <div class="popup-header">Информация о теплице</div>
-        <div class="popup-content" id="popup-content"></div>
-        <button onclick="copyToClipboard()">Скопировать</button>
+        <div class="popup-content" id="popup-content">
+            <!-- Содержимое будет заполнено динамически -->
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard()">Скопировать</button>
     </div>
 
     <script>
@@ -300,81 +368,79 @@
             const type = document.getElementById("type").options[document.getElementById("type").selectedIndex].text;
             const width = document.getElementById("width").value;
             const length = document.getElementById("length").value;
-            const frame = document.getElementById("frame").value;
-            const polycarbonate = document.getElementById("polycarbonate").value;
-            const foundation = document.getElementById("foundation").value;
+            const frame = document.getElementById("frame").options[document.getElementById("frame").selectedIndex].text;
+            const polycarbonate = document.getElementById("polycarbonate").options[document.getElementById("polycarbonate").selectedIndex].text;
+            const arcStep = document.getElementById("arc-step").value || "1 м";
+            const foundation = document.getElementById("foundation").options[document.getElementById("foundation").selectedIndex].text;
 
-            let extraItems = 0;
-            extraItems += parseInt(document.getElementById("drip_mech").value || 0) * 1690;
-            extraItems += parseInt(document.getElementById("drip_auto").value || 0) * 4490;
-            extraItems += parseInt(document.getElementById("window_auto").value || 0) * 2590;
-            extraItems += parseInt(document.getElementById("tape_steam").value || 0) * 1590;
-            extraItems += parseInt(document.getElementById("tape_zinc").value || 0) * 1990;
-            extraItems += parseInt(document.getElementById("extra_window").value || 0) * 1490;
+            // Рассчитываем общую стоимость
+            const totalCost = parseFloat(document.getElementById('type').value) +
+                (width * length * parseFloat(document.getElementById('frame').value)) +
+                (width * length * parseFloat(document.getElementById('polycarbonate').value)) +
+                parseFloat(document.getElementById('foundation').value);
 
-            let cost = 0;
-            cost += parseFloat(width) * parseFloat(length) * frame;
-            cost += parseFloat(polycarbonate);
-            cost += parseFloat(foundation);
-            cost += extraItems;
+            // Обновляем текст с общей стоимостью
+            document.getElementById("result").innerText = `Общая стоимость: ${totalCost.toFixed(2)} руб`;
+        }
 
-            const discountDate = new Date();
-            discountDate.setDate(discountDate.getDate() + 7);
-            const discountDateString = discountDate.toLocaleDateString('ru-RU');
+        // Показ всплывающего сообщения
+        function showPopup() {
+            const type = document.getElementById("type").options[document.getElementById("type").selectedIndex].text;
+            const width = document.getElementById("width").value;
+            const length = document.getElementById("length").value;
+            const frame = document.getElementById("frame").options[document.getElementById("frame").selectedIndex].text;
+            const polycarbonate = document.getElementById("polycarbonate").options[document.getElementById("polycarbonate").selectedIndex].text;
+            const arcStep = document.getElementById("arc-step").value || "1 м";
+            const foundation = document.getElementById("foundation").options[document.getElementById("foundation").selectedIndex].text;
 
-            // Формируем текст для всплывающего окна
+            // Формируем текст для всплывающего сообщения
             const popupContent = `
-Тип теплицы: ${type}
-☀️ Поликарбонат с защитой от ультрафиолета UV-400
-⚙️ Цельногнутые дуги из стальной замкнутой трубы
-⚙️ Каркас из оцинкованной внутри и снаружи стали (полностью защита от ржавчины и коррозии)
-⚙️ Краб-система на 4 болтах
-❄️ Не требует подпорок на зиму
-✏️ Гарантия 15 лет!!!
------------------
-Каркас: ${document.getElementById("frame").options[document.getElementById("frame").selectedIndex].text}
-Шаг дуги: ${document.getElementById("arc-step") ? document.getElementById("arc-step").value : 'Не выбран'}
-Поликарбонат: ${document.getElementById("polycarbonate").options[document.getElementById("polycarbonate").selectedIndex].text}
-Размеры (ШхД): ${width}x${length} м²
-Комплектация: 2 двери, 2 форточки
-Фундамент: ${document.getElementById("foundation").options[document.getElementById("foundation").selectedIndex].text}
-Сборка: ${document.getElementById("assembly") ? document.getElementById("assembly").value : 'Не нужна'}
------------------
-Стоимость со скидкой до ${discountDateString}: ${cost} р. (в ст. включены: чек, каркас на краб-системе, поликарбонат, инструкция по сборке)
+                Тип теплицы: ${type}
+                ☀️ Поликарбонат с защитой от ультрафиолета UV-400
+                ⚙️ Цельногнутые дуги из стальной замкнутой трубы
+                ⚙️ Каркас из оцинкованной внутри и снаружи стали (полностью защита от ржавчины и коррозии)
+                ⚙️ Краб-система на 4 болтах
+                ❄️ Не требует подпорок на зиму
+                ✏️ Гарантия 15 лет!!!
+                -----------------
+                Каркас: ${frame}
+                Шаг дуги: ${arcStep}
+                Поликарбонат: ${polycarbonate} с защитой от ультрафиолета
+                Размеры (ШхД): ${width} x ${length} м²
+                Комплектация: 2 двери, 2 форточки
+                Фундамент: ${foundation}
+                Сборка: ${document.getElementById("assembly") ? document.getElementById("assembly").options[document.getElementById("assembly").selectedIndex].text : "Не указано"}
+                -----------------
+                Стоимость со скидкой до ${getDiscountDate()}: ${document.getElementById("result").innerText}
+                (в стоимость включены: чек, каркас на краб-системе, поликарбонат, инструкция по сборке)
             `;
 
-            // Отображаем всплывающее окно с информацией
-            document.getElementById("popup-content").textContent = popupContent;
-            document.getElementById("popup-overlay").style.display = "block";
+            // Отображаем всплывающее сообщение
+            document.getElementById("popup-content").innerText = popupContent;
+            document.getElementById("overlay").style.display = "block";
             document.getElementById("popup").style.display = "block";
         }
 
-        // Показываем всплывающее окно с информацией
-        function showPopup() {
-            const popup = document.getElementById("popup");
-            const overlay = document.getElementById("popup-overlay");
-            popup.style.display = "block";
-            overlay.style.display = "block";
-        }
-
-        // Закрываем всплывающее окно
-        function closePopup() {
-            const popup = document.getElementById("popup");
-            const overlay = document.getElementById("popup-overlay");
-            popup.style.display = "none";
-            overlay.style.display = "none";
+        // Функция для получения даты скидки (текущая дата + 7 дней)
+        function getDiscountDate() {
+            const date = new Date();
+            date.setDate(date.getDate() + 7);
+            return date.toLocaleDateString("ru-RU");
         }
 
         // Копирование текста в буфер обмена
         function copyToClipboard() {
-            const popupContent = document.getElementById("popup-content");
-            const range = document.createRange();
-            range.selectNode(popupContent);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            document.execCommand("copy");
-            alert("Текст скопирован в буфер обмена!");
+            const text = document.getElementById("popup-content").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Текст скопирован!");
+            });
         }
+
+        // Закрытие всплывающего сообщения при клике на оверлей
+        document.getElementById("overlay").addEventListener("click", () => {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("popup").style.display = "none";
+        });
     </script>
 </body>
 </html>
